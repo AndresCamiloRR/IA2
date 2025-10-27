@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  quicktask:
+    build:
+      context: ./quicktask_backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    # Montar el código local para poder desarrollarlo y para que el archivo
+    # SQLite (tasks.db) se cree en el host y persista.
+    volumes:
+      - ./quicktask_backend:/app:rw
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+
+# Nota: la persistencia de SQLite se logra porque el directorio de la
+# aplicación se monta desde el host (./quicktask_backend). El archivo
+# SQLite se resolverá como `/app/tasks.db` dentro del contenedor y se
+# almacenará en `./quicktask_backend/tasks.db` en el host.
+
+volumes:
+  sqlite_data:
+    driver: local
